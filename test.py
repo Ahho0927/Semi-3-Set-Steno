@@ -1,8 +1,8 @@
-from pynput.keyboard import Key
-from key_slower import Keys
 from time import sleep
+from data.key import Keys
+from data.VKCODE import *
 
 keys = Keys()
 
 sleep(2)
-keys.SendString('dkssud gktpdy?')
+keys.PressReleaseKey(VK_SPACE)

@@ -2,19 +2,17 @@ from hgtk.letter import compose, decompose, NotHangulException
 from hgtk.checker import is_hangul, has_batchim
 from pynput.keyboard import Key
 from keyboard import write
-from key import Keys
+from data.key import Keys
 from json import load
-from VKCODE import VK_SPACE
+from data.VKCODE import VK_SPACE
 
 keys = Keys()
 class Translation:
     def __init__(self) -> None:
         self.KEY_TO_CONSONANT: dict[str] = dict(zip('qwertasdfgzxcv', 'ㅂㅈㄷㄱㅅㅁㄴㅇㄹㅎㅋㅌㅊㅍ'))
-        self.KEY_TO_VOWEL: dict[str] = {'y': 'ㅛ', 'u': 'ㅕ', 'i': 'ㅑ', 'o': 'ㅐ', 'p': 'ㅔ', 
-                                        'h': 'ㅗ', 'j': 'ㅓ', 'k': 'ㅏ', 'l': 'ㅣ', 
-                                        'n': 'ㅜ', 'm': 'ㅡ'}
+        self.KEY_TO_VOWEL: dict[str] = dict(zip('yuiophjklnm', 'ㅛㅕㅑㅐㅔㅗㅓㅏㅣㅜㅡ'))
         self.KEY_TO_SPECIAL_KEY: dict[str] = dict(zip("[b;',./1234567890", 'ㄲㅆ凵冂,.丅1234567890'))
-        self.KEY_TO_SPECIAL_KEY.update({Key.space: '空'})
+        self.KEY_TO_SPECIAL_KEY.update({'space': '空'})
 
         self.HANGUL_TO_KEY: dict[str] = {'ㄱ': 'r', 'ㄲ': 'R', 'ㄳ': 'rt', 'ㄴ': 's', 'ㄵ': 'sw', 'ㄶ': 'sg', 'ㄷ': 'e', 'ㄸ': 'E', 
                                          'ㄹ': 'f', 'ㄺ': 'fr', 'ㄻ': 'fa', 'ㄼ': 'fq', 'ㄽ': 'ft', 'ㄾ': 'fx', 'ㄿ': 'fv', 'ㅀ': 'fg', 
@@ -24,7 +22,7 @@ class Translation:
                                          'ㅗ': 'h', 'ㅘ': 'hk', 'ㅙ': 'ho', 'ㅚ': 'hl', 'ㅛ': 'y', 'ㅜ': 'n', 'ㅝ': 'nj', 'ㅞ': 'np', 'ㅟ': 'nl', 'ㅠ': 'b', 
                                          'ㅡ': 'm', 'ㅢ': 'ml', 'ㅣ': 'l'}
         
-        with open("./macros.json", "rt", encoding="UTF8") as file:
+        with open("./data/macros.json", "rt", encoding="UTF8") as file:
             self.MACRO_DATA: dict[str] = load(file)['macro_data']
 
         self.previous: str = ''
@@ -38,6 +36,7 @@ class Translation:
             special_keys += self.KEY_TO_SPECIAL_KEY.get(key, '')
 
         result = ''.join(sorted(consonants) + ['/'] + sorted(vowels) + ['/'] + sorted(special_keys))
+        print(result)
         return result
     
     def indicator_to_result(self, indicator):
@@ -62,15 +61,20 @@ class Translation:
 
             if stick:
                 previous_space_count = 0
-                while self.previous[::-1][previous_space_count] == ' ':
-                    previous_space_count += 1
+                for i, letter in enumerate(self.previous[::-1]):
+                    if letter != ' ':
+                        previous_space_count = i
+                        break
+                
                 self.backspace_pressed_count += previous_space_count
                 if previous_space_count:
                     self.previous = self.previous[:-previous_space_count]
+
             if allomorphic:
                 result = result_list[1]
                 if has_batchim(self.previous[-1]):
                     result = result_list[0]
+
             if combine:
                 d_cho, d_jung, d_jong = decompose(self.previous[::-1][previous_space_count])
                 result = compose(d_cho, d_jung, result[0]) + result[1:]
@@ -78,8 +82,7 @@ class Translation:
                 self.backspace_pressed_count += 2
                 self.previous = self.previous[:-1]
                 
-
-        except:
+        except Exception:
             cho, jung, jong = '', '', ''
             if consonants and len(consonants) <= 2:
                 cho = consonants[0]
@@ -117,6 +120,7 @@ class Translation:
             if '空' in special_keys:
                 result += ' '
         
+        print(result)
         return result
 
     

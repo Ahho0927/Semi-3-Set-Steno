@@ -1,8 +1,7 @@
 from pynput.keyboard import Key, Controller
 from keyboard import block_key, unhook_all
-from ctypes import wintypes
-import ctypes, string
-from VKCODE import *
+import ctypes
+from data.VKCODE import *
 
 KEYBD_LAYOUT = '''
            ESC  F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 F11 F12
@@ -46,52 +45,53 @@ class INPUT(ctypes.Structure):
 class Keys:
     def __init__(self) -> None:
         self.KEYS: list[str] = [Key.esc, Key.f1, Key.f2, Key.f3, Key.f4, Key.f5, Key.f6, Key.f7, Key.f8, Key.f9, Key.f10, Key.f11, Key.f12, 
-                   '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', Key.backspace, 
-                   Key.tab, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\', 
-                   Key.caps_lock, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", Key.enter, 
-                   Key.shift_l, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', Key.shift_r, 
-                   Key.ctrl_l, Key.cmd_l, Key.alt_l, Key.space, Key.alt_r, Key.cmd_r, Key.menu,
-                   Key.shift, Key.ctrl, Key.cmd, Key.alt, Key.alt_gr]
+                                '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', Key.backspace, 
+                                Key.tab, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\', 
+                                Key.caps_lock, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", Key.enter, 
+                                Key.shift_l, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', Key.shift_r, 
+                                Key.ctrl_l, Key.cmd_l, Key.alt_l, Key.space, Key.alt_r, Key.cmd_r, Key.menu,
+                                Key.shift, Key.ctrl, Key.cmd, Key.alt, Key.alt_gr]
 
         self.KEY_USED = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 
-                    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\', 
-                    'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'",
-                    'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', Key.space]
+                         'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\', 
+                         'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'",
+                         'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'space']
 
         self.KEY_BLOCKED = ['f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 
-                    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 
-                    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[',
-                    'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'",
-                    'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'space']
+                            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 
+                            'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[',
+                            'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'",
+                            'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'space']
 
         self.MODIFIER_KEY = [Key.shift, Key.shift_l, Key.shift_r, 
-                        Key.ctrl, Key.ctrl_l, Key.ctrl_r, 
-                        Key.alt, Key.alt_gr, Key.alt_l, Key.alt_r, 
-                        Key.cmd, Key.cmd_l, Key.cmd_r]
+                             Key.ctrl, Key.ctrl_l, Key.ctrl_r, 
+                             Key.alt, Key.alt_gr, Key.alt_l, Key.alt_r, 
+                             Key.cmd, Key.cmd_l, Key.cmd_r]
+        
+        self.KEY_TO_VKCODE: dict[str, int] = {'`': VK_OEM_3, '1': KEY_1, '2': KEY_2, '3': KEY_3, '4': KEY_4, '5': KEY_5, '6': KEY_6, '7': KEY_7, '8': KEY_8, '9': KEY_9, '0': KEY_0, '-': VK_OEM_MINUS, '=': VK_OEM_PLUS, 
+                                              'q': KEY_Q, 'w': KEY_W, 'e': KEY_E, 'r': KEY_R, 't': KEY_T, 'y': KEY_Y, 'u': KEY_U, 'i': KEY_I, 'o': KEY_O, 'p': KEY_P, '[': VK_OEM_4, ']': VK_OEM_6, '\\': VK_OEM_5, 
+                                              'a': KEY_A, 's': KEY_S, 'd': KEY_D, 'f': KEY_F, 'g': KEY_G, 'h': KEY_H, 'j': KEY_J, 'k': KEY_K, 'l': KEY_L, ';': VK_OEM_1, "'": VK_OEM_7, 
+                                              'z': KEY_Z, 'x': KEY_X, 'c': KEY_C, 'v': KEY_V, 'b': KEY_B, 'n': KEY_N, 'm': KEY_M, ',': VK_OEM_COMMA, '.': VK_OEM_PERIOD, '/': VK_OEM_2,
+                                              VK_SPACE: VK_SPACE}
 
         self.INPUT_MOUSE = 0
         self.INPUT_KEYBOARD = 1
         self.INPUT_HARDWARE = 2
         
-        self.UPPER = frozenset('~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?')
-        self.LOWER = frozenset("`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./")
-        self.ORDER = string.ascii_letters + string.digits + ' \b\r\t'
-        self.ALTER = dict(zip('!@#$%^&*()', '1234567890'))
-        self.OTHER = {'`': VK_OEM_3, '~': VK_OEM_3, '-': VK_OEM_MINUS, '_': VK_OEM_MINUS, '=': VK_OEM_PLUS, '+': VK_OEM_PLUS, 
-                '[': VK_OEM_4, '{': VK_OEM_4, ']': VK_OEM_6,'}': VK_OEM_6, '\\': VK_OEM_5, '|': VK_OEM_5, 
-                ';': VK_OEM_1, ':': VK_OEM_1, "'": VK_OEM_7, '"': VK_OEM_7,
-                ',': VK_OEM_COMMA, '<': VK_OEM_COMMA, '.': VK_OEM_PERIOD, '>': VK_OEM_PERIOD, '/': VK_OEM_2, '?': VK_OEM_2}
+        self.KEY_UPPER = '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?'
+        self.KEY_LOWER = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./"
+        self.KEY_UPPER_TO_LOWER = dict(zip(self.KEY_UPPER, self.KEY_LOWER))
         
         self.key_sent: dict[str] = {key: 0 for key in self.KEY_USED}
-        self.key_sent.update({Key.shift : 0, Key.space : 0})
+        self.key_sent.update({'shift': 0, 'space': 0, VK_SPACE: 0})
         
-    def KeybdInput(self, code, flags):
+    def _KeybdInput(self, code, flags):
         return KEYBDINPUT(code, code, flags, 0, None)
 
-    def Keyboard(self, code, flags=0):
-        return self.Input(self.KeybdInput(code, flags))
+    def _Keyboard(self, code, flags=0):
+        return self._Input(self._KeybdInput(code, flags))
 
-    def Input(self, structure):
+    def _Input(self, structure):
         if isinstance(structure, MOUSEINPUT):
             return INPUT(self.INPUT_MOUSE, _INPUTunion(mi=structure))
         if isinstance(structure, KEYBDINPUT):
@@ -137,50 +137,24 @@ class Keys:
         pInputs = LPINPUT(*inputs)
         cbSize = ctypes.c_int(ctypes.sizeof(INPUT))
         return ctypes.windll.user32.SendInput(nInputs, pInputs, cbSize)
-
-    def _keyboard_stream(self, string):
-        mode = False
-        for character in string.replace('\r\n', '\r').replace('\n', '\r'):
-            if mode and character in self.LOWER or not mode and character in self.UPPER:
-                yield self.Keyboard(VK_SHIFT, mode and KEYEVENTF_KEYUP)
-                mode = not mode
-            character = self.ALTER.get(character, character)
-            if character in self.ORDER:
-                code = ord(character.upper())
-            elif character in self.OTHER:
-                code = self.OTHER[character]
-            else:
-                continue
-                #Or, to abort on unavailable character
-                #raise ValueError('String is not understood!')
-            yield self.Keyboard(code)
-            yield self.Keyboard(code, KEYEVENTF_KEYUP)
-        if mode:
-            yield self.Keyboard(VK_SHIFT, KEYEVENTF_KEYUP)
             
-    def _SendInputs(self, string):
-        for event in self._keyboard_stream(string):
-            self.SendInput(event)
-            
-    def SendString(self, keys: str) -> None:
-        """A function that sends inputs of the string to keyboard.
+    def PressReleaseKeys(self, inputs: str):
+        unhook_all()
 
-        Args:
-            string (str): string(keys) to be sent
-        """
-        for key in keys:
-            if key in self.UPPER:
-                self.key_sent[Key.shift] += 1
-                key = dict(zip('!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?', "1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./")).get(key, key)
-            if key == ' ': key = Key.space
+        for key in inputs:
+            if key == ' ':
+                key = VK_SPACE
+                self.key_sent['space'] += 1
+            elif key in self.KEY_UPPER:
+                self._PressKey(VK_LSHIFT)
+                key = self.KEY_UPPER_TO_LOWER.get(key, key)
+                self.key_sent['shift'] += 1
+            self.PressReleaseKey(self.KEY_TO_VKCODE.get(key, 0))
+            self._ReleaseKey(VK_LSHIFT)
 
             self.key_sent[key] += 1
 
-        unhook_all()
-        self._SendInputs(keys) # WriteString() works with unknown error when without unhook_all().
         self.block_keys(self.KEY_BLOCKED)
-        # self.PressReleaseKey(VK_OEM_MINUS)
-        # self.PressReleaseKey(VK_BACK)
 
     def otherKeys(self, key):
         if key in [Key.f9, Key.f10, Key.f11, Key.f12]:
