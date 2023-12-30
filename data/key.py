@@ -104,27 +104,19 @@ class Keys:
         for key in keys:
             block_key(key)
 
-    def _PressKey(self, hexKeyCode):
+    def _ControlKey(self, hexKeyCode, ispress=True):
         extra = ctypes.c_ulong(0)
         ii_ = _INPUTunion()
-        ii_.ki = KEYBDINPUT( hexKeyCode, 0x48, 0, 0, ctypes.pointer(extra) )
+        ii_.ki = (KEYBDINPUT( hexKeyCode, 0x48, 0, 0, ctypes.pointer(extra) ) if ispress 
+                  else KEYBDINPUT( hexKeyCode, 0x48, 0x0002, 0, ctypes.pointer(extra) ))
         ##scancode
         #ii_.ki = KEYBDINPUT( 0, hexKeyCode, 0x0008, 0, ctypes.pointer(extra) )
         x = INPUT( ctypes.c_ulong(1), ii_ )
         ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
-
-    def _ReleaseKey(self, hexKeyCode):
-        extra = ctypes.c_ulong(0)
-        ii_ = _INPUTunion()
-        ii_.ki = KEYBDINPUT( hexKeyCode, 0x48, 0x0002, 0, ctypes.pointer(extra) )
-        ##scancode
-        #ii_.ki = KEYBDINPUT( 0, hexKeyCode, 0x0008 | 0x0002, 0, ctypes.pointer(extra) )
-        x = INPUT( ctypes.c_ulong(1), ii_ )
-        ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
     
     def PressReleaseKey(self, KeyCode):
-        self._PressKey(KeyCode)
-        self._ReleaseKey(KeyCode)
+        self._ControlKey(KeyCode, True)
+        self._ControlKey(KeyCode, False)
 
     def PressReleaseBackspace(self, count=0):
         for c in range(count):
@@ -137,22 +129,30 @@ class Keys:
         pInputs = LPINPUT(*inputs)
         cbSize = ctypes.c_int(ctypes.sizeof(INPUT))
         return ctypes.windll.user32.SendInput(nInputs, pInputs, cbSize)
-            
+    
+    def GenerateKeyFuncs(self, keys):
+        for key in keys:
+            if key == ' ':
+                self.key_sent['space'] += 1
+                yield VK_SPACE, True
+                yield VK_SPACE, False
+            else:
+                if key in self.KEY_UPPER:
+                    self.key_sent['shift'] += 1
+                    yield VK_LSHIFT, True
+                    key = self.KEY_UPPER_TO_LOWER.get(key, key)
+
+                self.key_sent[key] += 1
+                yield self.KEY_TO_VKCODE.get(key, 0), True
+                yield self.KEY_TO_VKCODE.get(key, 0), False
+
+                yield VK_LSHIFT, False
+                
     def PressReleaseKeys(self, inputs: str):
         unhook_all()
 
-        for key in inputs:
-            if key == ' ':
-                key = VK_SPACE
-                self.key_sent['space'] += 1
-            elif key in self.KEY_UPPER:
-                self._PressKey(VK_LSHIFT)
-                key = self.KEY_UPPER_TO_LOWER.get(key, key)
-                self.key_sent['shift'] += 1
-            self.PressReleaseKey(self.KEY_TO_VKCODE.get(key, 0))
-            self._ReleaseKey(VK_LSHIFT)
-
-            self.key_sent[key] += 1
+        for key, ispress in self.GenerateKeyFuncs(inputs):
+            self._ControlKey(key, ispress)
 
         self.block_keys(self.KEY_BLOCKED)
 
