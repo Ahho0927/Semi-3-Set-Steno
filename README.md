@@ -1,6 +1,6 @@
 <a name="readme-top"></a>
 
-[English](github.com/Ahho0927/Semi-3-Set-Steno/blob/main/doc/README_English.md)
+[English](./doc/README_English.md) [日本語](./doc/README_japanese.md)
 
 <!-- Header -->
 <h1 align="center">

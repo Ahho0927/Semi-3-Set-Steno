@@ -1,11 +1,11 @@
 <a name="readme-top"></a>
 
-[한국어](../README.md) [日本語](./README_japanese.md)
+[한국어](../README.md) [English](./README_English.md)
 
 
 <!-- Header -->
 <h1 align="center">
-    SEMI 3 SET KEYBOARD
+    準
 </h1>
 <p align="center">
     Type Faster
