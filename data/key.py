@@ -148,24 +148,10 @@ class Keys:
 
                 yield VK_LSHIFT, False
                 
-    def PressReleaseKeys(self, inputs: str):
-        unhook_all()
+    def PressReleaseKeys(self, inputs: str, backspace_count):
+        self.PressReleaseBackspace(backspace_count)
 
+        unhook_all()
         for key, ispress in self.GenerateKeyFuncs(inputs):
             self._ControlKey(key, ispress)
-
         self.block_keys(self.KEY_BLOCKED)
-
-    def otherKeys(self, key):
-        if key in [Key.f9, Key.f10, Key.f11, Key.f12]:
-            unhook_all()
-            match key:
-                case Key.f9:
-                    self.PressReleaseKey(VK_LEFT)
-                case Key.f10:
-                    self.PressReleaseKey(VK_UP)
-                case Key.f11:
-                    self.PressReleaseKey(VK_DOWN)
-                case Key.f12:
-                    self.PressReleaseKey(VK_RIGHT)
-            self.block_keys(self.KEY_BLOCKED)

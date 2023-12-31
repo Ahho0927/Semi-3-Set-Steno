@@ -28,6 +28,9 @@ class Translation:
         self.previous: str = ''
         self.backspace_pressed_count = 0
 
+    def reset_previous(self) -> None:
+        self.previous = '강'
+
     def key_to_string_indicator(self, keys):
         consonants, vowels, special_keys = '', '', ''
         for key in keys:
