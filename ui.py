@@ -5,6 +5,5 @@ tk = Tk()
 tk.title('SORIDAMA')
 tk.iconphoto(False, PhotoImage(file= './data/icon.png'))
 tk.minsize(400, 300)
-tk.
 
 tk.mainloop()
