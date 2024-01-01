@@ -62,8 +62,10 @@ Explanation
 ## TODO
 아직 추가해야 할 것이 많다.
 
-### Preference
+* [ ] bug fix:
+  * [ ] stick 기능을 연속 두번 사용 시 적용 안 됨 버그 고치기
 * [ ] 약어 추가
+* [ ] 일본어 README 추가
 
 <p align="right">(<a href="#readme-top">🡑</a>)</p>
 
