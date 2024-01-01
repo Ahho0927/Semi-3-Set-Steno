@@ -7,12 +7,13 @@ from data.VKCODE import *
 
 translation = Translation()
 keys = Keys()
+
 class Keyboard:
     def __init__(self) -> None:
         self.currently_pressed_key = set()
         self.currently_pressed_modifier_key = set()
         self.pressed_key = set()
-        self.is_running = True
+        self.is_running: bool = True
 
     def on_press(self, key: Key) -> None:
         """A function that runs when any key is pressed(on).
@@ -21,7 +22,7 @@ class Keyboard:
             key (Key): The pressed key.
         """
         try:
-            key = key.char
+            key: str = key.char
         except:
             pass
 

@@ -1,12 +1,16 @@
-from math import sqrt
+from pynput.keyboard import Key, Listener, Controller
+from keyboard import write
 
-r1 = int(input("r1 : "))
-r2 = int(input("r2 : "))
-max = int(sqrt(r1**2 + r2**2))
-dot = [0, 0]
-for n in range(max):
-    dot[0] += int((-(n-1)+sqrt(2*r1**2 - (n-1)**2))/2 + ((n-1)+sqrt(2*r1**2 - (n-1)**2))/2)
-    dot[1] += int((-(n-1)+sqrt(2*r2**2 - (n-1)**2))/2 + ((n-1)+sqrt(2*r2**2 - (n-1)**2))/2)
+def on_press(key: Key) -> None:
+    if key == Key.esc:
+        return False
+    
+    print(key, True)
 
-answer = 4*(dot[1] - dot[0]) -4*(r2-r1)
-print(answer)
+def on_release(key: Key) -> None:
+    print(key, False)
+
+
+if __name__ == '__main__':
+    with Listener(on_press=on_press, on_release=on_release, suppress=True) as listener:
+        listener.join()

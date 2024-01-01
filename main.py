@@ -2,9 +2,10 @@ from os import system
 
 from data.keyboard import *
 
-
-# #################################################################
 def text():
+    """
+    A Title Display.
+    """
     system('cls')
     print('''
 
