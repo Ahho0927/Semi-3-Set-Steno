@@ -4,6 +4,7 @@ from pynput.keyboard import Key
 from keyboard import write
 from data.key import Keys
 from json import load
+from re import sub
 from data.VKCODE import VK_SPACE
 
 keys = Keys()
@@ -29,7 +30,14 @@ class Translation:
         self.backspace_pressed_count = 0
 
     def reset_previous(self) -> None:
-        self.previous = '강'
+        self.previous = '으'
+        if self.allomorphic:
+            self.previous = '을'
+        if self.result_end_with_space:
+            self.previous += ' '
+
+        self.allomorphic = False
+        self.result_end_with_space = False
 
     def key_to_string_indicator(self, keys):
         consonants, vowels, special_keys = '', '', ''
@@ -48,10 +56,13 @@ class Translation:
 
         result = ''
         self.backspace_pressed_count = 0
+        self.result_end_with_space = False
         try:
             result = self.MACRO_DATA[indicator]
+            if result[-1] == ' ':
+                self.result_end_with_space = True
 
-            stick, combine, allomorphic = False, False, False
+            stick, combine, self.allomorphic = False, False, False
             if '⇤' in result:
                 stick = True
                 result = result[1:]
@@ -59,7 +70,7 @@ class Translation:
                 combine = True
                 result = result[1:]
             if '|' in result:
-                allomorphic = True
+                self.allomorphic = True
                 result_list = result.split('|')
 
             if stick:
@@ -73,7 +84,7 @@ class Translation:
                 if previous_space_count:
                     self.previous = self.previous[:-previous_space_count]
 
-            if allomorphic:
+            if self.allomorphic:
                 result = result_list[1]
                 if has_batchim(self.previous[-1]):
                     result = result_list[0]

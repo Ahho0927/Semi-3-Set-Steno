@@ -85,10 +85,16 @@ class Keyboard:
                     self.currently_pressed_modifier_key.remove(key)
 
                 elif key == Key.backspace:
-                    translation.reset_previous()
+                    try:
+                        self.reset_previous()
+                    except AttributeError:
+                        pass
 
                 elif key in [Key.f9, Key.f10, Key.f11, Key.f12]:
-                    translation.reset_previous()
+                    try:
+                        self.reset_previous()
+                    except AttributeError:
+                        pass
                     unhook_all()
                     match key:
                         case Key.f9:
